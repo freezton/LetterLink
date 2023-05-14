@@ -1,0 +1,30 @@
+.root {
+
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #9E9E9E;
+}
+
+.scroll-bar:vertical .track {
+
+}
+
+.button {
+    /*-fx-border-radius: 0;*/
+    -fx-background-radius: 0;
+}
+
+#MainPane {
+
+}
+
+#folderScrollPane {
+    /*-fx-border-style: none;*/
+    -fx-border-width: 3px;
+}
+
+#foldersVBox {
+    /*-fx-border-style: none;*/
+    -fx-border-width: 3px;
+}
