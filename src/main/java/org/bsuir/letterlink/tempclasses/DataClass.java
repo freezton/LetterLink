@@ -4,8 +4,8 @@ public class DataClass {
 
     static final String ENCODING = "UTF-8";
 
-    final static String smtpHost="smtp.mail.ru";
-//    public final static String smtpHost="192.168.184.144";
+    public final static String smtpHost="smtp.mail.ru";
+//    public final static String smtpHost="192.168.45.144";
     public  final static String imapHost="imap.mail.ru";
     public  final static String address="letterlink.test@mail.ru";
     public   final static String login="letterlink.test";

@@ -26,7 +26,7 @@ public abstract class SessionHandler {
         }
         if (params.length > 0)
             props.setProperty("mail.mime.charset", params[0]);
-        return Session.getDefaultInstance(props, authenticator);
+        return Session.getInstance(props, authenticator);
     }
 
 }

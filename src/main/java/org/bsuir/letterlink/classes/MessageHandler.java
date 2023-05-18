@@ -34,7 +34,7 @@ public abstract class MessageHandler {
 //            for (Address address: message.getFrom()) {
 //                System.out.println(message.getFrom()[0]);
 //            }
-            System.out.println();
+//            System.out.println();
         }
         return FXCollections.observableList(messagesList);
     }

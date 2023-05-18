@@ -6,6 +6,7 @@ module org.bsuir.letterlink {
     requires jakarta.mail;
     requires static lombok;
     requires slf4j.api;
+    requires javafx.web;
 
     opens org.bsuir.letterlink to javafx.fxml;
 
