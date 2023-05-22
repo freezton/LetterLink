@@ -2,8 +2,8 @@ package org.bsuir.letterlink.entities;
 
 import jakarta.mail.Message;
 import jakarta.mail.internet.MimeBodyPart;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.CheckBox;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,9 +16,19 @@ public class MessageEntity {
     private String recipient;
     private Date date;
     private boolean isRead;
-    //    private List<MimeBodyPart> attachmentList = new ArrayList<>();
-//    private boolean hasAttachments = false;
+    private CheckBox isChecked;
 
+    public CheckBox getChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(CheckBox checked) {
+        isChecked = checked;
+    }
+
+    public void setAttachmentList(List<MimeBodyPart> attachmentList) {
+        this.attachmentList = attachmentList;
+    }
 
     public Message getMessage() {
         return message;
@@ -67,13 +77,28 @@ public class MessageEntity {
     public void setRead(boolean read) {
         isRead = read;
     }
+    private List<MimeBodyPart> attachmentList = new ArrayList<>();
+
+    public List<MimeBodyPart> getAttachmentList(){
+        return attachmentList;
+    }
+
+    public void addAttachment(MimeBodyPart mbp) {
+//        hasAttachments = true;
+        attachmentList.add(mbp);
+//        try {
+//            System.out.println("Added attach: " + mbp.getFileName());
+//        } catch ( Exception e) {
+//            e.printStackTrace();
+//        }
+    }
 
     public MessageEntity(Message message, String subject, String sender, Date date, boolean isRead) {
         this.message = message;
         this.subject = subject;
         this.sender = sender;
-//        this.recipient = recipient;
         this.date = date;
         this.isRead = isRead;
+        this.isChecked = new CheckBox();
     }
 }

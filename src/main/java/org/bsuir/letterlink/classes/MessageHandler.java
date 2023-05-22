@@ -1,6 +1,5 @@
 package org.bsuir.letterlink.classes;
 
-import jakarta.mail.Address;
 import jakarta.mail.Flags;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -18,23 +17,20 @@ public abstract class MessageHandler {
     public static ObservableList<MessageEntity> getMessageEntityList(Message[] messages) throws MessagingException {
         List<MessageEntity> messagesList = new ArrayList<>();
         for (Message message: messages) {
-//            Pattern pattern = Pattern.compile("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}");
-//            Matcher matcher = pattern.matcher(message.getFrom()[0].toString());
-//            while (matcher.find())
-//                System.out.println(matcher.group());
-//            String from = Pattern.compile().matcher(message.getFrom()[0].toString()).group();
+            Pattern pattern = Pattern.compile("[A-z0-9._]+@[A-z0-9._]+");
+            Matcher matcher = pattern.matcher(message.getFrom()[0].toString());
+            String from;
+            if (matcher.find())
+                from = matcher.group();
+            else
+                from = "unknown";
             messagesList.add(new MessageEntity(
                     message,
                     message.getSubject(),
-                    message.getFrom()[0].toString(),
-//                    message.getAllRecipients()[0].toString(),
+                    from,
                     message.getSentDate(),
                     message.isSet(Flags.Flag.SEEN)
             ));
-//            for (Address address: message.getFrom()) {
-//                System.out.println(message.getFrom()[0]);
-//            }
-//            System.out.println();
         }
         return FXCollections.observableList(messagesList);
     }

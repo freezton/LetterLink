@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class FolderHandler {
 
@@ -29,6 +30,15 @@ public class FolderHandler {
         } catch (MessagingException e) {
             LOGGER.error(e.getMessage());
         }
+    }
+
+    public Folder getTrashFolder(Set<Folder> folderSet) {
+        for (Folder folder: folderSet) {
+            if (folder.getName().equals("Trash") || folder.getName().equals("Deleted") || folder.getName().equals("Корзина")) {
+                return folder;
+            }
+        }
+        return null;
     }
 
     public void openStore() throws MessagingException {

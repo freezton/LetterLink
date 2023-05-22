@@ -11,13 +11,13 @@ public abstract class SessionHandler {
         Properties props = new Properties();
         switch (protocol) {
             case "smtp":
-                props.setProperty("mail.smtp.starttls.enable", "true");
+//                props.setProperty("mail.smtp.starttls.enable", "true");
                 props.setProperty("mail.smtp.auth", "true");
                 props.setProperty("mail.smtp.port", port);
                 props.setProperty("mail.smtp.host", host);
                 break;
             case "imap":
-                props.setProperty("mail.imap.ssl.enable", "true");
+//                props.setProperty("mail.imap.ssl.enable", "true");
                 props.setProperty("mail.imap.auth", "true");
                 props.setProperty("mail.imap.host", host);
                 props.setProperty("mail.imap.port", port);
