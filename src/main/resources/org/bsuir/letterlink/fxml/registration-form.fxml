@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="272.0" prefWidth="392.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bsuir.letterlink.controllers.RegistrationWindowController">
+<AnchorPane prefHeight="353.0" prefWidth="392.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bsuir.letterlink.controllers.RegistrationWindowController">
    <children>
-      <Label layoutX="111.0" layoutY="14.0" text="Registration">
+      <Label layoutX="111.0" layoutY="12.0" text="Registration">
          <font>
             <Font size="32.0" />
          </font>
@@ -19,16 +19,22 @@
          </font>
       </TextField>
       <Label layoutX="31.0" layoutY="61.0" text="Email" />
-      <TextField fx:id="passwordField" layoutX="31.0" layoutY="145.0" prefHeight="44.0" prefWidth="330.0" promptText="password">
+      <TextField fx:id="passwordField" layoutX="31.0" layoutY="145.0" prefHeight="44.0" prefWidth="330.0" promptText="Enter password">
          <font>
             <Font size="20.0" />
          </font>
       </TextField>
       <Label layoutX="31.0" layoutY="127.0" text="Password" />
-      <Button fx:id="signUpButton" layoutX="31.0" layoutY="214.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" prefHeight="44.0" prefWidth="330.0" text="Sign up!">
+      <Button fx:id="signUpButton" layoutX="31.0" layoutY="285.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" prefHeight="44.0" prefWidth="330.0" text="Sign up!">
          <font>
             <Font size="20.0" />
          </font>
       </Button>
+      <TextField fx:id="repeatPasswordField" layoutX="31.0" layoutY="213.0" prefHeight="44.0" prefWidth="330.0" promptText="Repeat password">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </TextField>
+      <Label layoutX="31.0" layoutY="195.0" text="Repeat password" />
    </children>
 </AnchorPane>

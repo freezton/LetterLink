@@ -13,9 +13,11 @@ import java.io.IOException;
 public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("fxml/main-form.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
-        stage.setTitle("Letterlink client");
+//        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("fxml/main-form.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("fxml/login-form.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 600, 230);
+        stage.setTitle("Letterlink login");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }

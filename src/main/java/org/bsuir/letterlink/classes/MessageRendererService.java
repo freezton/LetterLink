@@ -43,7 +43,7 @@ public class MessageRendererService extends Service {
             @Override
             protected Object call() throws Exception {
                 try{
-                    loadMessage();
+                    getMessageData();
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -52,8 +52,8 @@ public class MessageRendererService extends Service {
         };
     }
 
-    private void loadMessage() throws MessagingException, IOException {
-        stringBuffer.setLength(0); // clears the SB
+    private void getMessageData() {
+        stringBuffer.setLength(0);
         Message message = emailMessage.getMessage();
         try {
             String contentType = message.getContentType();

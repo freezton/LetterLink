@@ -16,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 public class TestSMTP {
     static final String ENCODING = "UTF-8";
 
+
+
     public static void main(String args[]) throws MessagingException, IOException {
         String subject = "Letterlink test oleg mongolenko";
         String content = "Тут написан просто какой-то текст2";
@@ -47,7 +49,7 @@ public class TestSMTP {
         Transport.send(msg);
     }
 
-    public static void sendMultiMessage(String login, String password, String from, String to, String content, String subject, String attachment, String smtpPort, String smtpHost) throws MessagingException, UnsupportedEncodingException, UnsupportedEncodingException {
+    public static void sendMultiMessage(String login, String password, String from, String to, String content, String subject, String attachment, String smtpPort, String smtpHost) throws MessagingException, UnsupportedEncodingException {
 //        props.put("mail.mime.charset", ENCODING);
 
         Authenticator auth = new MailAuthenticator(login, password);

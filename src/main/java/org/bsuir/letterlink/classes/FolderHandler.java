@@ -65,16 +65,9 @@ public class FolderHandler {
 
     public Folder getFolder(String name) throws MessagingException {
         try {
-            if (!store.isConnected()) {
-                store.connect();
-            }
             return store.getFolder(name);
         } catch (MessagingException e) {
             LOGGER.error(e.getMessage());
-        } finally {
-            if (store.isConnected()) {
-//                store.close();
-            }
         }
         return null;
     }

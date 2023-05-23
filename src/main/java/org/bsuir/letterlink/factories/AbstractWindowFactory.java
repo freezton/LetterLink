@@ -1,9 +1,11 @@
 package org.bsuir.letterlink.factories;
 
+import javafx.stage.Stage;
+
 public interface AbstractWindowFactory {
 
     String resourcesRoot = "/org/bsuir/letterlink/fxml/";
 
-    void create(String fxmlFilename, String formTitle);
+    Stage create(String fxmlFilename, String formTitle, String ... params);
 //    void edit(Message)
 }

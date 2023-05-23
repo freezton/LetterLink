@@ -6,15 +6,11 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.*;
@@ -23,28 +19,25 @@ import javafx.scene.web.WebView;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.bsuir.letterlink.classes.MessageHandler;
-import org.bsuir.letterlink.classes.MessageRendererService;
+import org.bsuir.letterlink.classes.*;
 import org.bsuir.letterlink.entities.EmailEntity;
 import org.bsuir.letterlink.entities.MessageEntity;
 import org.bsuir.letterlink.factories.AbstractWindowFactory;
 import org.bsuir.letterlink.factories.MessageWindowFactory;
 import org.bsuir.letterlink.tempclasses.DataClass;
-import org.bsuir.letterlink.classes.FolderHandler;
 
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class MainWindowController implements Initializable {
+public class MainWindowController {
 
     DataClass data = new DataClass();
     final int BUTTONS_AMOUNT = 15;
 
     private FolderHandler folderHandler;
     public static HashMap<Folder, ObservableList<MessageEntity>> messages;
-    public static HashMap<String, EmailEntity> emails = new HashMap<>();
+    public static EmailEntity email;
     private Folder selectedFolder = null;
 
     @FXML
@@ -84,6 +77,7 @@ public class MainWindowController implements Initializable {
     @FXML
     private ComboBox folderComboBox;
 
+    private Button selectedButton;
     private static Popup popup;
     private MessageRendererService messageRendererService;
 
@@ -104,6 +98,7 @@ public class MainWindowController implements Initializable {
         button.setPrefHeight(1055.0 / BUTTONS_AMOUNT);
         button.setPrefWidth(foldersVBox.getPrefWidth());
         button.setOnAction(actionEvent -> {
+            selectedButton = button;
             setUpFolders(folder);
         });
         foldersVBox.getChildren().add(button);
@@ -118,9 +113,19 @@ public class MainWindowController implements Initializable {
     void onAddFolderButtonClick() {
 
     }
-    @FXML
-    void onDeleteFolderButtonClick() {
 
+    @FXML
+    void onDeleteFolderButtonClick() throws MessagingException {
+        selectedFolder.close();
+        selectedFolder.delete(true);
+        try {
+            selectedFolder.open(Folder.READ_WRITE);
+            Validator.showAlert(Alert.AlertType.ERROR, "Delete folder", "Can't delete selected folder", "This folder can't be deleted");
+        } catch (Exception e) {
+            messages.remove(selectedFolder);
+            foldersVBox.getChildren().remove(selectedButton);
+            Validator.showAlert(Alert.AlertType.INFORMATION, "Delete folder", "Success", "Folder was successfully deleted");
+        }
     }
     @FXML
     void onDeleteMessageClick() {
@@ -128,27 +133,24 @@ public class MainWindowController implements Initializable {
                 .stream()
                 .filter(entity -> entity.getChecked().isSelected())
                 .collect(Collectors.toList());
-
         if (deletedMessages.isEmpty()) {
             deletedMessages.add(messageTableView.getSelectionModel().getSelectedItem());
         }
-
+        if (deletedMessages.isEmpty())
+            return;
         Folder trashFolder = folderHandler.getTrashFolder(messages.keySet());
         if (trashFolder == null) {
             return;
         }
-
         try {
             if (!selectedFolder.getName().equals(trashFolder.getName())) {
                 Message[] deletedArr = deletedMessages.stream()
                         .map(MessageEntity::getMessage)
                         .toArray(Message[]::new);
-
                 trashFolder.appendMessages(deletedArr);
                 ObservableList<MessageEntity> entities = MessageHandler.getMessageEntityList(trashFolder.getMessages());
                 entities.addAll(messages.get(trashFolder));
                 messages.put(trashFolder, entities);
-
             }
             for (MessageEntity entity : deletedMessages) {
                 entity.getMessage().setFlag(Flags.Flag.DELETED, true);
@@ -167,23 +169,20 @@ public class MainWindowController implements Initializable {
                 .stream()
                 .filter(entity -> entity.getChecked().isSelected())
                 .collect(Collectors.toList());
-
         if (movedMessages.isEmpty()) {
             movedMessages.add(messageTableView.getSelectionModel().getSelectedItem());
         }
-
+        if (movedMessages.isEmpty())
+            return;
         Message[] movedMessagesArray = movedMessages.stream()
                 .map(MessageEntity::getMessage)
                 .toArray(Message[]::new);
-
         Folder destination = (Folder) folderComboBox.getSelectionModel().getSelectedItem();
-
         try {
             selectedFolder.copyMessages(movedMessagesArray, destination);
             for (Message message : movedMessagesArray) {
                 message.setFlag(Flags.Flag.DELETED, true);
             }
-
             messages.get(selectedFolder).removeAll(movedMessages);
             messages.put(destination, MessageHandler.getMessageEntityList(destination.getMessages()));
             selectedFolder.expunge();
@@ -195,7 +194,7 @@ public class MainWindowController implements Initializable {
 
 
     @FXML
-    void onButtonClick(ActionEvent event) {
+    void onButtonClick() {
         Button button = new Button("New Butt on");
         button.setPrefHeight(1055.0 / BUTTONS_AMOUNT);
         button.setPrefWidth(foldersVBox.getPrefWidth());
@@ -251,13 +250,8 @@ public class MainWindowController implements Initializable {
             if (newValue != null) {
                 messageRendererService.setEmailMessage(newValue);
                 messageRendererService.restart();
-            } else {
-//                System.out.println("No message selected.");
             }
         });
-    }
-    private void initEmails() {
-        emails.put("letterlink.test@mail.ru", new EmailEntity(DataClass.address, DataClass.password));
     }
 
     public void showAutoHidePopup() {
@@ -292,44 +286,38 @@ public class MainWindowController implements Initializable {
         fadeOutTransition.play();
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize() {
         initVisuals();
         initMessagesTableView();
-        initEmails();
-
-        webView.getEngine().loadContent("");
         messageRendererService = new MessageRendererService(webView.getEngine());
-
         messages = new HashMap<>();
-        Thread loaderThread = new Thread(() -> {
-            folderHandler = new FolderHandler(data.imapHost, data.imapPort, data.address, data.password);
-            try {
-                folderHandler.openStore();
-                for (Folder folder: folderHandler.getFolders()) {
-                    folder.open(Folder.READ_WRITE);
-
-                    messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
-                    if (folder.getName().equals("INBOX")) {
-                        messageTableView.setItems(messages.get(folder));
-                        selectedFolder = folder;
-                    }
-                    Platform.runLater(() -> addFolderButton(folder));
+        folderHandler = new FolderHandler(SessionHandler.getImapHost(
+                email.getAddress()),
+                SessionHandler.getImapPort(email.getAddress()),
+                email.getAddress(),
+                email.getPassword()
+        );
+        try {
+            folderHandler.openStore();
+            for (Folder folder: folderHandler.getFolders()) {
+                folder.open(Folder.READ_WRITE);
+                messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
+                if (folder.getName().equals("INBOX")) {
+                    messageTableView.setItems(messages.get(folder));
+                    selectedFolder = folder;
                 }
-                List<Folder> otherFolders = messages.keySet().stream()
-                        .filter(exFolder -> !exFolder.equals(selectedFolder))
-                        .collect(Collectors.toCollection(ArrayList::new));
-                Platform.runLater(() -> {
-                    folderComboBox.setItems(FXCollections.observableList(otherFolders));
-                    folderComboBox.setValue(otherFolders.get(0));
-                });
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            } finally {
-                Thread.currentThread().interrupt();
+                Platform.runLater(() -> addFolderButton(folder));
             }
-        });
-        loaderThread.start();
+            List<Folder> otherFolders = messages.keySet().stream()
+                    .filter(exFolder -> !exFolder.equals(selectedFolder))
+                    .collect(Collectors.toCollection(ArrayList::new));
+            Platform.runLater(() -> {
+                folderComboBox.setItems(FXCollections.observableList(otherFolders));
+                folderComboBox.setValue(otherFolders.get(0));
+            });
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML

@@ -2,10 +2,9 @@ package org.bsuir.letterlink.factories;
 
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import org.bsuir.letterlink.Application;
 import org.bsuir.letterlink.controllers.ControllerManager;
 
-public class MessageWindowFactory implements AbstractWindowFactory {
+public class RegistrationWindowFactory implements AbstractWindowFactory {
     @Override
     public Stage create(String fxmlFilename, String formTitle, String ... params) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcesRoot + fxmlFilename));

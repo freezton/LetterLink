@@ -1,11 +1,10 @@
 package org.bsuir.letterlink.controllers;
 
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
+import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -24,7 +23,9 @@ import org.bsuir.letterlink.entities.EmailEntity;
 import org.bsuir.letterlink.tempclasses.DataClass;
 import org.bsuir.letterlink.tempclasses.TestSMTP;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MessageWindowController implements Initializable {
@@ -40,6 +41,8 @@ public class MessageWindowController implements Initializable {
     @FXML
     private TextField subjectTextField;
 
+    private List<String> attachments;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         recipientTextField.setText("qwjvwjl@gmail.com");
@@ -50,24 +53,38 @@ public class MessageWindowController implements Initializable {
 
     }
 
+    void sendMessage() {
+
+    }
+
     @FXML
-    void sendButtonAction(ActionEvent event) {
+    void sendButtonAction() {
         Thread emailThread = new Thread(() -> {
-            EmailEntity entity = MainWindowController.emails.get("letterlink.test@mail.ru");
+            // получение данных о пользователе
+            EmailEntity entity = MainWindowController.email;
             Session session = SessionHandler.getSession("smtp", DataClass.smtpHost, DataClass.smtpPort, entity.getAuth());
-            MimeMessage msg = new MimeMessage(session);
+            // создание сообщения
+            MimeMessage message = new MimeMessage(session);
             try {
                 Platform.runLater(() -> showAutoHidePopup("Sending message..."));
-                System.out.println(entity.getAddress());
-                msg.setFrom(new InternetAddress(entity.getAddress()));
-                msg.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientTextField.getText()));  //"qwjvwjl@gmail.com"
-                msg.setSubject(subjectTextField.getText(), "UTF-8");
-                msg.setContent(htmlEditor.getHtmlText(), "text/html");
-                Transport.send(msg);
+                // установка данных для сообщения
+                message.setFrom(new InternetAddress(entity.getAddress()));
+                message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientTextField.getText()));
+                message.setSubject(subjectTextField.getText(), "UTF-8");
+                message.setContent(htmlEditor.getHtmlText(), "text/html");
+                // добавление вложений
+                Multipart multipart = new MimeMultipart();
+                for (String file: attachments) {
+                    MimeBodyPart attachment = new MimeBodyPart();
+                    attachment.attachFile(file);
+                    multipart.addBodyPart(attachment);
+                }
+                message.setContent(multipart);
+                // отправка сообщения
+                Transport.send(message);
                 Platform.runLater(() -> showAutoHidePopup("Message successfully sent"));
-            } catch (MessagingException e) {
-//                throw new RuntimeException(e);
-                Platform.runLater(() -> showAutoHidePopup("Oops! Something went wrong"));
+            } catch (MessagingException | IOException e) {
+                throw new RuntimeException(e);
             }
             Thread.currentThread().interrupt();
         });
