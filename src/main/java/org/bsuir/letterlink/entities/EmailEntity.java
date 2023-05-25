@@ -1,16 +1,12 @@
 package org.bsuir.letterlink.entities;
 
 import jakarta.mail.Authenticator;
-import jakarta.mail.NoSuchProviderException;
-import jakarta.mail.Session;
-import jakarta.mail.Store;
 import org.bsuir.letterlink.classes.MailAuthenticator;
 
 public class EmailEntity {
     private String address;
     private String password;
     private Authenticator auth;
-
 
     public Authenticator getAuth() {
         return auth;

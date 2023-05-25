@@ -84,13 +84,7 @@ public class MessageEntity {
     }
 
     public void addAttachment(MimeBodyPart mbp) {
-//        hasAttachments = true;
         attachmentList.add(mbp);
-//        try {
-//            System.out.println("Added attach: " + mbp.getFileName());
-//        } catch ( Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     public MessageEntity(Message message, String subject, String sender, Date date, boolean isRead) {

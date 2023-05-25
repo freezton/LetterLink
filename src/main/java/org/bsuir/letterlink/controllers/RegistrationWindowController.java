@@ -39,10 +39,10 @@ public class RegistrationWindowController {
             Validator.showAlert(Alert.AlertType.WARNING, "Incorrect address", "Address must be as 'example@letterlink.com'", "Try one more time");
             return;
         }
-        if (!isCorrectPassword(password)) {
-            Validator.showAlert(Alert.AlertType.WARNING, "Incorrect password", "Password must contain latin symbols, numbers and at least one special symbol (one of them: !@#&)", "Try one more time");
-            return;
-        }
+//        if (!isCorrectPassword(password)) {
+//            Validator.showAlert(Alert.AlertType.WARNING, "Incorrect password", "Password must contain latin symbols, numbers and at least one special symbol (one of them: !@#&)", "Try one more time");
+//            return;
+//        }
         if (!password.equals(repeatPasswordField.getText())) {
             Validator.showAlert(Alert.AlertType.WARNING, "Incorrect password", "Password mismatch", "Try one more time");
             return;

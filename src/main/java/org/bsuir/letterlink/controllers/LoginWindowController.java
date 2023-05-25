@@ -12,8 +12,8 @@ import org.bsuir.letterlink.classes.FolderHandler;
 import org.bsuir.letterlink.classes.SessionHandler;
 import org.bsuir.letterlink.factories.AbstractWindowFactory;
 import org.bsuir.letterlink.factories.MainWindowFactory;
-import org.bsuir.letterlink.factories.MessageWindowFactory;
 import org.bsuir.letterlink.factories.RegistrationWindowFactory;
+import org.bsuir.letterlink.tempclasses.DataClass;
 
 public class LoginWindowController {
     @FXML
@@ -35,27 +35,32 @@ public class LoginWindowController {
         login();
     }
 
+    final String ip = "192.168.1.144";
+
     void login() {
         AbstractWindowFactory factory = new MainWindowFactory();
         try {
-            FolderHandler folderHandler = new FolderHandler(SessionHandler.getImapHost(
-                    emailField.getText()),
-                    SessionHandler.getImapPort(emailField.getText()),
-                    emailField.getText(), passwordField.getText()
+//            FolderHandler folderHandler = new FolderHandler(
+//                    SessionHandler.getImapHost(
+//                    emailField.getText()),
+//                    SessionHandler.getImapPort(emailField.getText()),
+//                    emailField.getText(), passwordField.getText()
+//            );
+            FolderHandler folderHandler = new FolderHandler(
+                    DataClass.imapHost,
+                    DataClass.imapPort,
+                    emailField.getText(),
+                    passwordField.getText()
             );
-            // попытка получить доступ к хранилищу
             folderHandler.openStore();
-            // сохранение данных для входа, если установлен чекбокс
             if (rememberMeCheckBox.isSelected()) {
                 saveCredentials();
             }
-            // отображение главного окна
             factory.create("main-form.fxml", "Letterlink", emailField.getText(), passwordField.getText());
             Stage stage = (Stage) passwordField.getScene().getWindow();
             stage.close();
             folderHandler.closeStore();
         } catch (Exception e) {
-            // вывод сообщения об ошибке
             System.out.println("incorrect credentials");
         }
     }

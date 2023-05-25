@@ -60,27 +60,25 @@ public class MessageWindowController implements Initializable {
     @FXML
     void sendButtonAction() {
         Thread emailThread = new Thread(() -> {
-            // получение данных о пользователе
             EmailEntity entity = MainWindowController.email;
             Session session = SessionHandler.getSession("smtp", DataClass.smtpHost, DataClass.smtpPort, entity.getAuth());
-            // создание сообщения
             MimeMessage message = new MimeMessage(session);
             try {
                 Platform.runLater(() -> showAutoHidePopup("Sending message..."));
-                // установка данных для сообщения
                 message.setFrom(new InternetAddress(entity.getAddress()));
                 message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientTextField.getText()));
                 message.setSubject(subjectTextField.getText(), "UTF-8");
                 message.setContent(htmlEditor.getHtmlText(), "text/html");
-                // добавление вложений
+
                 Multipart multipart = new MimeMultipart();
                 for (String file: attachments) {
                     MimeBodyPart attachment = new MimeBodyPart();
                     attachment.attachFile(file);
                     multipart.addBodyPart(attachment);
                 }
-                message.setContent(multipart);
-                // отправка сообщения
+                if (!(multipart.getCount() == 0))
+                    message.setContent(multipart);
+
                 Transport.send(message);
                 Platform.runLater(() -> showAutoHidePopup("Message successfully sent"));
             } catch (MessagingException | IOException e) {

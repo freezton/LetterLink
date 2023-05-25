@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 public class MainWindowController {
 
+    final String ip = "192.168.1.144";
     DataClass data = new DataClass();
     final int BUTTONS_AMOUNT = 15;
 
@@ -199,8 +200,6 @@ public class MainWindowController {
         button.setPrefHeight(1055.0 / BUTTONS_AMOUNT);
         button.setPrefWidth(foldersVBox.getPrefWidth());
         foldersVBox.getChildren().add(button);
-
-//        showAutoHidePopup();
     }
     private void initVisuals() {
         folderScrollPane.prefHeightProperty().bind(anchorPane.heightProperty().subtract(100));
@@ -291,9 +290,15 @@ public class MainWindowController {
         initMessagesTableView();
         messageRendererService = new MessageRendererService(webView.getEngine());
         messages = new HashMap<>();
-        folderHandler = new FolderHandler(SessionHandler.getImapHost(
-                email.getAddress()),
-                SessionHandler.getImapPort(email.getAddress()),
+//        folderHandler = new FolderHandler(SessionHandler.getImapHost(
+//                email.getAddress()),
+//                SessionHandler.getImapPort(email.getAddress()),
+//                email.getAddress(),
+//                email.getPassword()
+//        );
+        folderHandler = new FolderHandler(
+                DataClass.imapHost,
+                DataClass.imapPort,
                 email.getAddress(),
                 email.getPassword()
         );
