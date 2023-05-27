@@ -57,11 +57,18 @@ public class MessageRendererService extends Service {
         Message message = emailMessage.getMessage();
         try {
             String contentType = message.getContentType();
-            if (isMultipartType(contentType)) {
+//            if (isMultipartType(contentType)) {
+//                Multipart multipart = (Multipart) message.getContent();
+//                loadMultipart(multipart, stringBuffer);
+//            } else if (isSimpleType(contentType)) {
+//                stringBuffer.append(message.getContent().toString());
+//            }
+
+            if (isSimpleType(contentType)) {
+                stringBuffer.append(message.getContent().toString());
+            } else if (isMultipartType(contentType)) {
                 Multipart multipart = (Multipart) message.getContent();
                 loadMultipart(multipart, stringBuffer);
-            } else if (isSimpleType(contentType)) {
-                stringBuffer.append(message.getContent().toString());
             }
         } catch (Exception e) {
             stringBuffer.append("Unable to load message...");
@@ -100,6 +107,23 @@ public class MessageRendererService extends Service {
                     emailMessage.addAttachment(mbp);
                 }
             }
+
+//            if (isSimpleType(contentType)) {
+//                if (!contentType.contains("text/plain"))
+//                    stringBuffer.append(bodyPart.getContent().toString());
+//            } else if (contentType.toLowerCase().startsWith("image/")) {
+//                String base64Data = convertToBase64(bodyPart.getInputStream());
+//                String htmlContent = "<div style=\"max-width: 100%; height: auto;\"><img src=\"data:image/png;base64," + base64Data + "\" style=\"max-width: 100%; height: auto;\"></div>";
+//                stringBuffer.append(htmlContent);
+//            } else if (isMultipartType(contentType)) {
+//                Multipart multipart2 = (Multipart) bodyPart.getContent();
+//                loadMultipart(multipart2, stringBuffer);
+//            } else if (!isTextPlain(contentType)) {
+//                MimeBodyPart mbp = (MimeBodyPart) bodyPart;
+//                if (Part.ATTACHMENT.equalsIgnoreCase(mbp.getDisposition())) {
+//                    emailMessage.addAttachment(mbp);
+//                }
+//            }
         }
     }
 
@@ -109,6 +133,7 @@ public class MessageRendererService extends Service {
 
     private boolean isSimpleType(String contentType){
         if(contentType.contains("TEXT/HTML") || contentType.contains("mixed") || contentType.contains("text")){
+//        if(contentType.contains("TEXT/HTML") || contentType.contains("text")){
             return true;
         }else{
             return false;

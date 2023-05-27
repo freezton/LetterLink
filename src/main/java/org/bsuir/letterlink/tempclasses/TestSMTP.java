@@ -25,13 +25,14 @@ public class TestSMTP {
         String smtpHost = DataClass.smtpHost;
         String address = DataClass.address;
         String login = DataClass.login;
-        String to = "qwjvwjl@gmail.com";
+//        String to = "qwjvwjl@gmail.com";
+        String to = "exmaple@letterlink.com";
         String password = DataClass.password;
         String smtpPort = DataClass.smtpPort;
 
         String attachment = "d:\\pic.jpg";
-        sendMultiMessage(login, password, address, to, content, subject, attachment, smtpPort, smtpHost);
-//        sendSimpleMessage (login, password, address, to, content, subject, smtpPort, smtpHost);
+//        sendMultiMessage(login, password, address, to, content, subject, attachment, smtpPort, smtpHost);
+        sendSimpleMessage (login, password, address, to, content, subject, smtpPort, smtpHost);
 
     }
 

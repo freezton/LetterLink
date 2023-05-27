@@ -64,20 +64,23 @@ public class MessageWindowController implements Initializable {
             Session session = SessionHandler.getSession("smtp", DataClass.smtpHost, DataClass.smtpPort, entity.getAuth());
             MimeMessage message = new MimeMessage(session);
             try {
+
                 Platform.runLater(() -> showAutoHidePopup("Sending message..."));
                 message.setFrom(new InternetAddress(entity.getAddress()));
                 message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientTextField.getText()));
                 message.setSubject(subjectTextField.getText(), "UTF-8");
                 message.setContent(htmlEditor.getHtmlText(), "text/html");
 
-                Multipart multipart = new MimeMultipart();
-                for (String file: attachments) {
-                    MimeBodyPart attachment = new MimeBodyPart();
-                    attachment.attachFile(file);
-                    multipart.addBodyPart(attachment);
+                if (attachments != null && !attachments.isEmpty()) {
+                    Multipart multipart = new MimeMultipart();
+                    for (String file : attachments) {
+                        MimeBodyPart attachment = new MimeBodyPart();
+                        attachment.attachFile(file);
+                        multipart.addBodyPart(attachment);
+                    }
+                    if (!(multipart.getCount() == 0))
+                        message.setContent(multipart);
                 }
-                if (!(multipart.getCount() == 0))
-                    message.setContent(multipart);
 
                 Transport.send(message);
                 Platform.runLater(() -> showAutoHidePopup("Message successfully sent"));

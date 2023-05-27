@@ -34,7 +34,7 @@ public class FolderHandler {
 
     public Folder getTrashFolder(Set<Folder> folderSet) {
         for (Folder folder: folderSet) {
-            if (folder.getName().equals("Trash") || folder.getName().equals("Deleted") || folder.getName().equals("Корзина")) {
+            if (folder.getName().toLowerCase().equals("Trash") || folder.getName().toLowerCase().equals("Deleted") || folder.getName().toLowerCase().equals("Корзина")) {
                 return folder;
             }
         }

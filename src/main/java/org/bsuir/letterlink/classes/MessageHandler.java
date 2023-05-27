@@ -29,7 +29,8 @@ public abstract class MessageHandler {
                     message.getSubject(),
                     from,
                     message.getSentDate(),
-                    message.isSet(Flags.Flag.SEEN)
+//                    message.isSet(Flags.Flag.SEEN)
+                    false
             ));
         }
         return FXCollections.observableList(messagesList);
