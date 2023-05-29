@@ -30,6 +30,8 @@ public class LoginWindowController {
     private Button loginButton;
     @FXML
     private Button signupButton;
+    @FXML
+    private Label infoLabel;
 
 
     public void initialize() {
@@ -45,10 +47,10 @@ public class LoginWindowController {
         AbstractWindowFactory factory = new MainWindowFactory();
         Thread loginThread = new Thread(() -> {
             try {
-
                 Platform.runLater(() -> {
                     loginButton.setDisable(true);
                     signupButton.setDisable(true);
+                    infoLabel.setText("Please, wait...");
                 });
                 FolderHandler folderHandler = new FolderHandler(
                         ServerConfig.getImapHost(emailField.getText()),
@@ -61,7 +63,7 @@ public class LoginWindowController {
                     saveCredentials();
                 }
                 Platform.runLater(() -> {
-                    factory.create("main-form.fxml", "Letterlink", emailField.getText(), passwordField.getText());
+                    factory.create("main-form.fxml", "Letterlink - " + emailField.getText(), emailField.getText(), passwordField.getText());
                     Stage stage = (Stage) passwordField.getScene().getWindow();
                     stage.close();
                 });
@@ -74,6 +76,7 @@ public class LoginWindowController {
                 Platform.runLater(() -> {
                     loginButton.setDisable(false);
                     signupButton.setDisable(false);
+                    infoLabel.setText("");
                 });
                 Thread.currentThread().interrupt();
             }

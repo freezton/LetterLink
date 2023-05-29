@@ -2,19 +2,25 @@ package org.bsuir.letterlink.controllers;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.bsuir.letterlink.classes.ServerConfig;
 import org.bsuir.letterlink.classes.Validator;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class RegistrationWindowController {
+public class RegistrationWindowController implements Initializable {
 
-    final String IP = "192.168.1.144";
+    private String IP;
     final int PORT = 85;
     @FXML
     private TextField emailField;
@@ -49,6 +55,7 @@ public class RegistrationWindowController {
             Validator.showAlert(Alert.AlertType.WARNING, "Incorrect password", "Password mismatch", "Try one more time");
             return;
         }
+        final String[] response = {""};
         Thread thread = new Thread(() -> {
             try {
                 Platform.runLater(()-> {
@@ -61,6 +68,11 @@ public class RegistrationWindowController {
                 StringBuilder message = new StringBuilder("REG ");
                 message.append(login).append(" ").append(password);
                 writer.println(message);
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                response[0] = reader.readLine();
+                response[0] = reader.readLine();
+
             } catch (IOException e) {
                 Platform.runLater(()-> Validator.showAlert(Alert.AlertType.WARNING, "Registration", "Something went wrong", "Try one more time"));
             } finally {
@@ -68,9 +80,20 @@ public class RegistrationWindowController {
                     signUpButton.setDisable(false);
                     signUpButton.setText("Sign up");
                 });
+                if (response[0].startsWith("250")) {
+                    Platform.runLater(()-> Validator.showAlert(Alert.AlertType.INFORMATION, "Registration", "Success", "You have registered a new account"));
+                }
+                else {
+                    Platform.runLater(()-> Validator.showAlert(Alert.AlertType.INFORMATION, "Registration", "Oops", "An account with the same name already exists"));
+                }
                 Thread.currentThread().interrupt();
             }
         });
         thread.start();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        IP = ServerConfig.getIp();
     }
 }

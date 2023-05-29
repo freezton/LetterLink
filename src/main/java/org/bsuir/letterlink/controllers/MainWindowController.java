@@ -108,16 +108,11 @@ public class MainWindowController {
     }
 
     void addFolderButton(Folder folder) {
-        //folder.getName().equals("INBOX") ? "Inbox" :
         Button button = new Button(folder.getName());
         button.setFont(new Font(16));
         button.setPrefHeight(1055.0 / BUTTONS_AMOUNT);
         button.setPrefWidth(foldersVBox.getPrefWidth());
         button.setOnAction(actionEvent -> {
-//            for (Node b: foldersVBox.getChildren()) {
-//                ((Button)b).getStyleClass().remove("highlight");
-//            }
-//            button.getStyleClass().add("highlight");
             selectedButton = button;
             setUpFolders(folder);
         });
@@ -141,7 +136,7 @@ public class MainWindowController {
 
     @FXML
     void onUpdateButtonClick() throws MessagingException {
-//        if (!isLetterlink(email.getAddress())) {
+        if (!isLetterlink(email.getAddress())) {
             for (Folder folder: messages.keySet()) {
                 try {
 //                    messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
@@ -151,26 +146,34 @@ public class MainWindowController {
                     e.printStackTrace();
                 }
             }
-//        } else {
-//            for (Node node: foldersVBox.getChildren()) {
-//                Button button = (Button) node;
-//                Folder folder = folderHandler.getFolder(button.getText());
-//                folder.open(Folder.READ_WRITE);
-//                Folder oldFolder = null;
-//                for (Folder f: messages.keySet()) {
-//                    if (f.getName().equals(folder.getName())) {
-//                        oldFolder = f;
-//                        break;
-//                    }
-//                }
-//                messages.remove(oldFolder);
-//                messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
-//                Button finalButton = button;
-//                button.setOnAction(actionEvent -> {
-//                    selectedButton = finalButton;
-//                    setUpFolders(folder);
-//                });
-//            }
+        } else {
+            for (Node node: foldersVBox.getChildren()) {
+                Button button = null;
+                if (((Button)node).getText().toLowerCase().equals(selectedFolder.getName().toLowerCase())) {
+                    button = (Button) node;
+                }
+                if (button != null) {
+                    Folder folder = folderHandler.getFolder(button.getText());
+                    folder.open(Folder.READ_WRITE);
+                    Folder oldFolder = null;
+                    for (Folder f : messages.keySet()) {
+                        if (f.getName().equals(folder.getName())) {
+                            oldFolder = f;
+                            break;
+                        }
+                    }
+                    messages.remove(oldFolder);
+                    messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
+                    Button finalButton = button;
+                    button.setOnAction(actionEvent -> {
+                        selectedButton = finalButton;
+                        setUpFolders(folder);
+                    });
+                    button.fire();
+                }
+            }
+
+            }
 //        }
         messageTableView.refresh();
     }
@@ -178,6 +181,8 @@ public class MainWindowController {
     @FXML
     void onAddFolderButtonClick() {
         String name = Validator.showInputField("Add folder", "Please, enter the name", "Name");
+        if (name == null || name.isBlank())
+            return;
         Thread addFolderThread = new Thread(() -> {
             Platform.runLater(() -> addFolderButton.setDisable(true));
             try {
@@ -189,7 +194,6 @@ public class MainWindowController {
                     messages.put(f, MessageHandler.getMessageEntityList(f.getMessages()));
                     Platform.runLater(() -> addFolderButton(f));
                 } else {
-//        if (!))
                     Platform.runLater(() -> Validator.showAlert(Alert.AlertType.WARNING, "Add folder", "This folder can not be created", "Folder with this name already exists"));
                 }
             } catch (Exception e) {
@@ -204,8 +208,6 @@ public class MainWindowController {
 
     @FXML
     void onDeleteFolderButtonClick() throws MessagingException {
-//        if (!Validator.showConfirmation("Delete folder", "This action can not return", "Do you really wanna delete folder?"))
-//            return;
         System.out.println(messages.keySet());
         selectedFolder.close();
         selectedFolder.delete(false);
@@ -227,7 +229,7 @@ public class MainWindowController {
         if (deletedMessages.isEmpty()) {
             deletedMessages.add(messageTableView.getSelectionModel().getSelectedItem());
         }
-        if (deletedMessages.isEmpty())
+        if (deletedMessages.isEmpty() || deletedMessages.get(0) == null)
             return;
         Folder trashFolder = folderHandler.getTrashFolder(messages.keySet());
         if (trashFolder == null) {
@@ -241,7 +243,9 @@ public class MainWindowController {
                 trashFolder.appendMessages(deletedArr);
                 ObservableList<MessageEntity> entities = MessageHandler.getMessageEntityList(trashFolder.getMessages());
                 entities.addAll(messages.get(trashFolder));
-                messages.put(trashFolder, entities);
+//                messages.put(trashFolder, entities);
+                messages.get(trashFolder).clear();
+                messages.get(trashFolder).addAll(entities);
             }
             for (MessageEntity entity : deletedMessages) {
                 entity.getMessage().setFlag(Flags.Flag.DELETED, true);
@@ -316,63 +320,65 @@ public class MainWindowController {
 
     @FXML
     void onMoveButtonClick()  {
-        if (!isLetterlink(email.getAddress())){
-            deleteMessages();
-            return;
+//        if (!isLetterlink(email.getAddress())){
+//            deleteMessages();
+//            return;
+//        }
+        List<MessageEntity> movedMessages = messages.get(selectedFolder)
+                .stream()
+                .filter(entity -> entity.getChecked().isSelected())
+                .collect(Collectors.toList());
+        if (movedMessages.isEmpty()) {
+            movedMessages.add(messageTableView.getSelectionModel().getSelectedItem());
         }
-            List<MessageEntity> movedMessages = messages.get(selectedFolder)
-                    .stream()
-                    .filter(entity -> entity.getChecked().isSelected())
-                    .collect(Collectors.toList());
-            if (movedMessages.isEmpty()) {
-                movedMessages.add(messageTableView.getSelectionModel().getSelectedItem());
+        if (movedMessages.isEmpty() || movedMessages.get(0) == null)
+            return;
+        Message[] movedMessagesArray = movedMessages.stream()
+                .map(MessageEntity::getMessage)
+                .toArray(Message[]::new);
+        Folder destination = (Folder) folderComboBox.getSelectionModel().getSelectedItem();
+        try {
+            selectedFolder.copyMessages(movedMessagesArray, destination);
+            if (!isLetterlink(email.getAddress())) {
+                for (Message message : movedMessagesArray) {
+                    message.setFlag(Flags.Flag.DELETED, true);
+                }
             }
-            if (movedMessages.isEmpty())
-                return;
-            Message[] movedMessagesArray = movedMessages.stream()
-                    .map(MessageEntity::getMessage)
-                    .toArray(Message[]::new);
-            Folder destination = (Folder) folderComboBox.getSelectionModel().getSelectedItem();
-            try {
-                selectedFolder.copyMessages(movedMessagesArray, destination);
-                if (!isLetterlink(email.getAddress())) {
-                    for (Message message : movedMessagesArray) {
-                        message.setFlag(Flags.Flag.DELETED, true);
+            messages.get(selectedFolder).removeAll(movedMessages);
+            if (isLetterlink(email.getAddress())) {
+                for (Message message : movedMessagesArray) {
+                    message.setFlag(Flags.Flag.DELETED, true);
+                }
+                selectedFolder.expunge();
+            }
+            if (!isLetterlink(email.getAddress())) {
+                messages.put(destination, MessageHandler.getMessageEntityList(destination.getMessages()));
+            } else {
+                Button button = null;
+                destination.close();
+                for (Node node: foldersVBox.getChildren()) {
+                    if (((Button)node).getText().toLowerCase().equals(destination.getName().toLowerCase())) {
+                        button = (Button) node;
+                        break;
                     }
                 }
-                messages.get(selectedFolder).removeAll(movedMessages);
-                if (isLetterlink(email.getAddress())) {
-                    for (Message message : movedMessagesArray) {
-                        message.setFlag(Flags.Flag.DELETED, true);
-                    }
-                    selectedFolder.expunge();
-                }
-                if (!isLetterlink(email.getAddress())) {
-                    messages.put(destination, MessageHandler.getMessageEntityList(destination.getMessages()));
-                } else {
-                    Button button = null;
-                    destination.close();
-                    for (Node node: foldersVBox.getChildren()) {
-                        if (((Button)node).getText().toLowerCase().equals(destination.getName().toLowerCase())) {
-                            button = (Button) node;
-                            break;
-                        }
-                    }
-                    Folder folder = folderHandler.getFolder(destination.getName());
-                    folder.open(Folder.READ_WRITE);
-                    messages.remove(destination);
-                    messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
-                    Button finalButton = button;
-                    button.setOnAction(actionEvent -> {
-                        selectedButton = finalButton;
-                        setUpFolders(folder);
-                    });
-                }
-                if (!isLetterlink(email.getAddress()))
-                    selectedFolder.expunge();
-//                setUpComboBox();
-            } catch (MessagingException e) {
-                e.printStackTrace();}
+                Folder folder = folderHandler.getFolder(destination.getName());
+                folder.open(Folder.READ_WRITE);
+                messages.remove(destination);
+                messages.put(folder, MessageHandler.getMessageEntityList(folder.getMessages()));
+                Button finalButton = button;
+                button.setOnAction(actionEvent -> {
+                    selectedButton = finalButton;
+                    setUpFolders(folder);
+                });
+            }
+            if (!isLetterlink(email.getAddress()))
+                selectedFolder.expunge();
+//            setUpComboBox();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
     }
 
 
@@ -524,7 +530,7 @@ public class MainWindowController {
                 folderComboBox.setItems(FXCollections.observableList(otherFolders));
                 folderComboBox.setValue(otherFolders.get(0));
             });
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
