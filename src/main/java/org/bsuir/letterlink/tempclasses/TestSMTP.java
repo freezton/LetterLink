@@ -77,7 +77,7 @@ public class TestSMTP {
         System.out.println(msg);
 
 
-        FolderHandler handler = new FolderHandler(DataClass.imapHost, DataClass.imapPort, auth);
+//        FolderHandler handler = new FolderHandler(DataClass.imapHost, DataClass.imapPort, auth);
 
         Transport.send(msg);
     }

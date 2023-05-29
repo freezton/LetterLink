@@ -33,13 +33,18 @@
          <font>
             <Font size="16.0" />
          </font></Label>
-      <Button layoutX="289.0" layoutY="140.0" mnemonicParsing="false" onAction="#attachBtnAction" prefHeight="25.0" prefWidth="64.0" text="Attach" />
+      <Button fx:id="attachButton" layoutX="289.0" layoutY="140.0" mnemonicParsing="false" onAction="#attachBtnAction" prefHeight="25.0" prefWidth="64.0" text="Attach" />
       <Label fx:id="emailAddress" layoutX="98.0" layoutY="23.0" text="example@letterlink.com">
          <font>
             <Font size="16.0" />
          </font></Label>
-      <ComboBox disable="true" layoutX="438.0" layoutY="140.0" prefWidth="150.0" />
-      <Button disable="true" layoutX="364.0" layoutY="140.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="64.0" text="Delete" />
+      <ComboBox fx:id="attachComboBox" disable="true" layoutX="438.0" layoutY="140.0" prefWidth="150.0" />
+      <Button fx:id="deleteAttachButton" disable="true" layoutX="364.0" layoutY="140.0" mnemonicParsing="false" onAction="#deleteAttachButtonClick" prefHeight="25.0" prefWidth="64.0" text="Delete" />
+      <Label fx:id="infoLabel" layoutX="14.0" layoutY="526.0">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
       
    </children>
 </AnchorPane>

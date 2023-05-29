@@ -1,15 +1,17 @@
 package org.bsuir.letterlink.controllers;
 
 import jakarta.mail.AuthenticationFailedException;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.bsuir.letterlink.classes.FolderHandler;
+import org.bsuir.letterlink.classes.ServerConfig;
 import org.bsuir.letterlink.classes.SessionHandler;
+import org.bsuir.letterlink.classes.Validator;
 import org.bsuir.letterlink.factories.AbstractWindowFactory;
 import org.bsuir.letterlink.factories.MainWindowFactory;
 import org.bsuir.letterlink.factories.RegistrationWindowFactory;
@@ -19,11 +21,15 @@ public class LoginWindowController {
     @FXML
     private TextField emailField;
     @FXML
-    private TextField passwordField;
+    private PasswordField passwordField;
     @FXML
     private CheckBox rememberMeCheckBox;
     @FXML
     private ImageView logoImageView;
+    @FXML
+    private Button loginButton;
+    @FXML
+    private Button signupButton;
 
 
     public void initialize() {
@@ -35,34 +41,44 @@ public class LoginWindowController {
         login();
     }
 
-    final String ip = "192.168.1.144";
-
     void login() {
         AbstractWindowFactory factory = new MainWindowFactory();
-        try {
-//            FolderHandler folderHandler = new FolderHandler(
-//                    SessionHandler.getImapHost(
-//                    emailField.getText()),
-//                    SessionHandler.getImapPort(emailField.getText()),
-//                    emailField.getText(), passwordField.getText()
-//            );
-            FolderHandler folderHandler = new FolderHandler(
-                    DataClass.imapHost,
-                    DataClass.imapPort,
-                    emailField.getText(),
-                    passwordField.getText()
-            );
-            folderHandler.openStore();
-            if (rememberMeCheckBox.isSelected()) {
-                saveCredentials();
+        Thread loginThread = new Thread(() -> {
+            try {
+
+                Platform.runLater(() -> {
+                    loginButton.setDisable(true);
+                    signupButton.setDisable(true);
+                });
+                FolderHandler folderHandler = new FolderHandler(
+                        ServerConfig.getImapHost(emailField.getText()),
+                        DataClass.imapPort,
+                        emailField.getText(),
+                        passwordField.getText()
+                );
+                folderHandler.openStore();
+                if (rememberMeCheckBox.isSelected()) {
+                    saveCredentials();
+                }
+                Platform.runLater(() -> {
+                    factory.create("main-form.fxml", "Letterlink", emailField.getText(), passwordField.getText());
+                    Stage stage = (Stage) passwordField.getScene().getWindow();
+                    stage.close();
+                });
+                folderHandler.closeStore();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> Validator.showAlert(Alert.AlertType.ERROR, "Login", "Error", "Invalid credentials"));
+                System.out.println("incorrect credentials");
+            } finally {
+                Platform.runLater(() -> {
+                    loginButton.setDisable(false);
+                    signupButton.setDisable(false);
+                });
+                Thread.currentThread().interrupt();
             }
-            factory.create("main-form.fxml", "Letterlink", emailField.getText(), passwordField.getText());
-            Stage stage = (Stage) passwordField.getScene().getWindow();
-            stage.close();
-            folderHandler.closeStore();
-        } catch (Exception e) {
-            System.out.println("incorrect credentials");
-        }
+        });
+        loginThread.start();
     }
 
     void saveCredentials() {
@@ -70,6 +86,8 @@ public class LoginWindowController {
     }
     @FXML
     void onSignUpButtonClick(ActionEvent event) {
+//        emailField.setText("letterlink.test@mail.ru");
+//        passwordField.setText("xt3tTHf6bMSFqxWrWN3Y");
         AbstractWindowFactory factory = new RegistrationWindowFactory();
         factory.create("registration-form.fxml", "Registration");
     }

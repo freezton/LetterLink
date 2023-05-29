@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="230.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bsuir.letterlink.controllers.LoginWindowController">
+<AnchorPane prefHeight="230.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.bsuir.letterlink.controllers.LoginWindowController">
    <children>
-      <TextField fx:id="emailField" layoutX="275.0" layoutY="24.0" prefHeight="39.0" prefWidth="309.0" promptText="example@letterlink.com" text="test1@letterlink.com">
+      <Label layoutX="275.0" layoutY="85.0" text="Password" />
+      <TextField fx:id="emailField" layoutX="275.0" layoutY="33.0" prefHeight="39.0" prefWidth="309.0" promptText="example@letterlink.com" text="test1@letterlink.com">
          <font>
-            <Font size="16.0" />
+            <Font size="18.0" />
          </font>
       </TextField>
-      <TextField fx:id="passwordField" layoutX="275.0" layoutY="77.0" prefHeight="39.0" prefWidth="309.0" promptText="Password" text="1111">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </TextField>
-      <CheckBox fx:id="rememberMeCheckBox" layoutX="275.0" layoutY="131.0" mnemonicParsing="false" text="Remember me">
+      <CheckBox fx:id="rememberMeCheckBox" layoutX="275.0" layoutY="131.0" mnemonicParsing="false" text="Remember me" visible="false">
          <font>
             <Font size="16.0" />
          </font>
       </CheckBox>
-      <Button layoutX="275.0" layoutY="171.0" mnemonicParsing="false" onAction="#onLoginButtonClick" prefHeight="39.0" prefWidth="147.0" text="Login">
+      <Button fx:id="loginButton" layoutX="275.0" layoutY="171.0" mnemonicParsing="false" onAction="#onLoginButtonClick" prefHeight="39.0" prefWidth="147.0" text="Login">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
-      <Button layoutX="439.0" layoutY="171.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" prefHeight="39.0" prefWidth="147.0" text="Sign up">
+      <Button fx:id="signupButton" layoutX="439.0" layoutY="171.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" prefHeight="39.0" prefWidth="147.0" text="Sign up">
          <font>
             <Font size="16.0" />
          </font>
       </Button>
       <ImageView fx:id="logoImageView" fitHeight="199.0" fitWidth="245.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
+      <PasswordField fx:id="passwordField" layoutX="275.0" layoutY="103.0" prefHeight="35.0" prefWidth="309.0" promptText="password" text="1111">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </PasswordField>
+      <Label layoutX="275.0" layoutY="15.0" text="Email" />
    </children>
 </AnchorPane>

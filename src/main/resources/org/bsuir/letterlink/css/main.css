@@ -10,27 +10,27 @@
 
 }
 
+.button.highlight {
+    /*-fx-background-color: yellow;*/
+    -fx-opacity: 0.8;
+}
+
 .button {
-    /*-fx-border-radius: 0;*/
     -fx-background-radius: 0;
 }
 
 .split-pane:horizontal > .split-pane-divider {
     -fx-background-color: #C0C0C0;
-    /*-fx-background-size: 1px;*/
     -fx-font-size: 2px;
-    /*-fx-padding: 0 0 0 0;*/
 }
 .split-pane:vertical > .split-pane-divider {
     -fx-background-color: transparent;
 }
 
 #folderScrollPane {
-    /*-fx-border-style: none;*/
     -fx-border-width: 3px;
 }
 
 #foldersVBox {
-    /*-fx-border-style: none;*/
     -fx-border-width: 3px;
 }

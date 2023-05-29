@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -19,22 +20,22 @@
          </font>
       </TextField>
       <Label layoutX="31.0" layoutY="61.0" text="Email" />
-      <TextField fx:id="passwordField" layoutX="31.0" layoutY="145.0" prefHeight="44.0" prefWidth="330.0" promptText="Enter password">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </TextField>
       <Label layoutX="31.0" layoutY="127.0" text="Password" />
       <Button fx:id="signUpButton" layoutX="31.0" layoutY="285.0" mnemonicParsing="false" onAction="#onSignUpButtonClick" prefHeight="44.0" prefWidth="330.0" text="Sign up!">
          <font>
             <Font size="20.0" />
          </font>
       </Button>
-      <TextField fx:id="repeatPasswordField" layoutX="31.0" layoutY="213.0" prefHeight="44.0" prefWidth="330.0" promptText="Repeat password">
+      <Label layoutX="31.0" layoutY="195.0" text="Repeat password" />
+      <PasswordField fx:id="passwordField" layoutX="31.0" layoutY="145.0" prefHeight="44.0" prefWidth="330.0" promptText="password">
          <font>
             <Font size="20.0" />
          </font>
-      </TextField>
-      <Label layoutX="31.0" layoutY="195.0" text="Repeat password" />
+      </PasswordField>
+      <PasswordField fx:id="repeatPasswordField" layoutX="31.0" layoutY="213.0" prefHeight="44.0" prefWidth="330.0" promptText="repeat password">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </PasswordField>
    </children>
 </AnchorPane>

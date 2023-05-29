@@ -1,8 +1,10 @@
 package org.bsuir.letterlink.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.bsuir.letterlink.classes.Validator;
 
@@ -17,9 +19,9 @@ public class RegistrationWindowController {
     @FXML
     private TextField emailField;
     @FXML
-    private TextField passwordField;
+    private PasswordField passwordField;
     @FXML
-    private TextField repeatPasswordField;
+    private PasswordField repeatPasswordField;
     @FXML
     private Button signUpButton;
 
@@ -47,15 +49,28 @@ public class RegistrationWindowController {
             Validator.showAlert(Alert.AlertType.WARNING, "Incorrect password", "Password mismatch", "Try one more time");
             return;
         }
-        try {
-            String login = address.substring(0, address.indexOf('@'));
-            Socket socket = new Socket(IP, PORT);
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-            StringBuilder message = new StringBuilder("REG ");
-            message.append(login).append(" ").append(password);
-            writer.println(message);
-        } catch (IOException e) {
-            Validator.showAlert(Alert.AlertType.WARNING, "Registration", "Something went wrong", "Try one more time");
-        }
+        Thread thread = new Thread(() -> {
+            try {
+                Platform.runLater(()-> {
+                    signUpButton.setDisable(true);
+                    signUpButton.setText("Please, wait...");
+                });
+                String login = address.substring(0, address.indexOf('@'));
+                Socket socket = new Socket(IP, PORT);
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+                StringBuilder message = new StringBuilder("REG ");
+                message.append(login).append(" ").append(password);
+                writer.println(message);
+            } catch (IOException e) {
+                Platform.runLater(()-> Validator.showAlert(Alert.AlertType.WARNING, "Registration", "Something went wrong", "Try one more time"));
+            } finally {
+                Platform.runLater(()-> {
+                    signUpButton.setDisable(false);
+                    signUpButton.setText("Sign up");
+                });
+                Thread.currentThread().interrupt();
+            }
+        });
+        thread.start();
     }
 }

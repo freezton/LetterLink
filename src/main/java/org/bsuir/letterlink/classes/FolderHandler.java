@@ -2,6 +2,7 @@ package org.bsuir.letterlink.classes;
 
 import jakarta.mail.*;
 
+import org.bsuir.letterlink.controllers.MainWindowController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Arrays;
@@ -13,9 +14,22 @@ public class FolderHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(FolderHandler.class);
     private Store store;
 
+
+    public Boolean isFolderExists(Set<Folder> folderSet, String name) {
+        for (Folder folder: folderSet) {
+            if (folder.getName().toLowerCase().equals(name.toLowerCase()))
+                return true;
+        }
+        return false;
+    }
+
     public FolderHandler(String host, String port, String address, String password) {
         Authenticator auth = new MailAuthenticator(address, password);
-        Session session = SessionHandler.getSession("imap", host, port, auth);
+        Session session;
+        if (MainWindowController.isLetterlink(address))
+            session = SessionHandler.getSession("imap", host, port, auth);
+        else
+            session = SessionHandler.getSession("imaps", host, port, auth);
         try {
             store = session.getStore("imap");
         } catch (MessagingException e) {
@@ -24,7 +38,11 @@ public class FolderHandler {
     }
 
     public FolderHandler(String host, String port, Authenticator auth) {
-        Session session = SessionHandler.getSession("imap", host, port, auth);
+        Session session;
+        if (MainWindowController.isLetterlink(MainWindowController.email.getAddress()))
+            session = SessionHandler.getSession("imap", host, port, auth);
+        else
+            session = SessionHandler.getSession("imaps", host, port, auth);
         try {
             store = session.getStore("imap");
         } catch (MessagingException e) {
@@ -34,7 +52,7 @@ public class FolderHandler {
 
     public Folder getTrashFolder(Set<Folder> folderSet) {
         for (Folder folder: folderSet) {
-            if (folder.getName().toLowerCase().equals("Trash") || folder.getName().toLowerCase().equals("Deleted") || folder.getName().toLowerCase().equals("Корзина")) {
+            if (folder.getName().toLowerCase().equals("trash") || folder.getName().toLowerCase().equals("deleted") || folder.getName().toLowerCase().equals("корзина")) {
                 return folder;
             }
         }
@@ -53,10 +71,11 @@ public class FolderHandler {
         }
     }
 
-    public List<Folder> getFolders() throws MessagingException {
+//    public List<Folder> getFolders() throws MessagingException {
+    public Folder[] getFolders() throws MessagingException {
         try {
-            Folder[] folders = store.getDefaultFolder().list();
-            return Arrays.asList(folders);
+//            Folder[] folders = store.getDefaultFolder().list();
+            return store.getDefaultFolder().list();
         } catch (MessagingException e) {
             LOGGER.error(e.getMessage());
         }
